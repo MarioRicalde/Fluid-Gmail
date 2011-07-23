@@ -16,13 +16,14 @@ window.log = function() {};
 
   var global = {
     unreadMsgCount : -1,
-    $mail          : Array()
+    $mail          : Array(),
+    oldCount       : 0
   };
 
   var config = {
     initialDelay         : 5,      // seconds to wait for the first check
-    pollInterval         : 30,     // seconds to wait between checks
-    priority             : 5,      // Growl preference
+    pollInterval         : 10,      // seconds to wait between checks
+    priority             : 1,      // Growl preference
     sticky               : false,  // Growl preference
     trimLength           : 150,    // Max number of characters to show for sender, subject and message body
     sound                : "Blow", // System Sound
@@ -72,7 +73,7 @@ window.log = function() {};
   
       // Iterate over the unread messages and display a growl notification for the NEW unread messages
       global.$mail.find(selector.unreadMessage).each(function(){
-        if(++currentMsg > (global.unreadMsgCount - oldCount)){ return false; } // We're only going to show you the NEW unread messages
+        if(++currentMsg > (global.unreadMsgCount - global.oldCount)){ return false; } // We're only going to show you the NEW unread messages
         return Growl.notify(
           'New Message From ' + prepText($(this).find(selector.sender)),
           prepText($(this).find(selector.subject)) + prepText($(this).find(selector.body))
@@ -83,7 +84,7 @@ window.log = function() {};
 
   var Messages = {
     unreadInbox: function() {
-      var old = global.unreadMsgCount;
+      global.oldCount = global.unreadMsgCount;
       // Make sure jQuery has been loaded (if it hasn't yet, it might be on the next pass)
       if (jQuery){
         if(!global.$mail.length){ global.$mail = jQuery('#canvas_frame').contents(); }
@@ -94,21 +95,18 @@ window.log = function() {};
 
       global.unreadMsgCount = matches ? matches[1] : 0;
       
-      // Return it to store it on the oldCount
-      return old;
-      
     }
   }
   
   function init(justNotify) {
-    var oldCount = Messages.unreadInbox();
+    Messages.unreadInbox();
     // If the unread message count is greater than it was the last
     // time we checked, we know that we've received one or more new
     // messages.
     
-    if(oldCount == -1 || justNotify) {
+    if(global.oldCount == -1 || justNotify) {
       Notify.unreadMsgCount();
-    } else if (global.unreadMsgCount > oldCount) {
+    } else if (global.unreadMsgCount > global.oldCount) {
       Notify.unreadMsgTitles();
     }
 
