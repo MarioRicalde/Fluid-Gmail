@@ -1,3 +1,5 @@
+//@todo play golf with this one.
+
 // Insert jQuery into the page
 var q=document.createElement('script'); q.setAttribute('src','http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'); document.body.appendChild(q);
 
@@ -10,6 +12,33 @@ var q=document.createElement('script'); q.setAttribute('src','http://ajax.google
   
   
   function run_scripts() {
+    
+    // @todo make a hook so that it appears by its own.
+    (function() {
+      // Quote Text
+      var $m = $('#canvas_frame').contents();
+      var orig_button = $m.find('.fa.eL')
+      var button = '<img id=":kl" class="fa eL blockquote-sel" src="images/cleardot.gif" command="+BLOCKQUOTE_TEXT" title="Quote" unselectable="on">';
+      var $ta = $m.find('iframe.Am.Al.editable').contents();
+      // Only add when it's not there.
+      if ( ! orig_button.next().hasClass('blockquote')) {
+        
+        orig_button.after(button);
+        orig_button.next().unbind().click(function() {
+          var selection = $m[0].getSelection().toString();
+          var quote = [
+            "<div><br></div>",
+            '<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: rgb(204, 204, 204); border-left-style: solid; padding-left: 1ex; ">' + selection + "</blockquote>",
+            "<div><br></div>"
+          ].join('');
+          
+          console.log('Doing it.');
+          // body can be empty.
+          $ta.find('body').html($ta.find('body').html() + quote);
+        });
+      }
+    })();
+    
 
     // Remove Trailing Quotes from GMail
     setInterval(function() {
